@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+    vaultwarden:
+        image: vaultwarden/server:latest
+        restart: unless-stopped
+        volumes:
+            - ./vaultwarden_data:/data
+            - ./vaultwarden_db:/db
+            - ./vaultwarden_icon_cache:/icon_cache
+            - ./vaultwarden_sends:/sends
+        environment:
+          # see: https://github.com/dani-garcia/vaultwarden/blob/main/.env.template
+          DOMAIN: vaultwarden.online # the domain you're hosting vaultwarden on
+          ADMIN_TOKEN: INSERT_YOUR_VERY_SECURE_ADMIN_TOKEN_HERE
+          DATABASE_URL: /db/db.sqlite3
+          ICON_CACHE_FOLDER: /icon_cache
+          SENDS_FOLDER: /sends
+          SIGNUPS_ALLOWED: "true"
+          SMTP_FROM: email@example.com
+          SMTP_FROM_NAME: YOUR AMAZING PASSWORD VAULT
+          SMTP_HOST: smtp.example.com  # I use SendGrid, it's free and easy to setup
+          SMTP_PORT: '587' # consult your SMTP provider
+          SMTP_SECURITY: starttls  # other options are: ("starttls", "force_tls", "off") 
+          SMTP_TIMEOUT: '15'
+          SMTP_USERNAME: apikey
+          SMTP_PASSWORD: INSERT_YOUR_SMTP_PASSWORD_HERE
+
+    nginx:
+        image: nginx:latest
+        restart: unless-stopped
+        depends_on:
+            - vaultwarden
+        volumes:
+            # note that you should follow the instructions in the slides
+            # to copy the entire /etc/nginx folder from the docker image
+            # to your host machine first
+            - ./nginx:/etc/nginx
+        ports:
+            - 443:443

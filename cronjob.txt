@@ -1,0 +1,5 @@
+# you may need to manually clean up the log if you keep all logs like this
+0 0 * * * /opt/services/vaultwarden/backup.sh >> /var/log/vw_backup.log 2>&1
+
+# alternatively you can do this to only keep the last run log
+0 0 * * * /opt/services/vaultwarden/backup.sh > /var/log/backup_lastrun.log 2>&1
